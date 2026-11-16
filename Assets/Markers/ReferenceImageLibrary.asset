@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 848409ee8ba454f42a5ddff137688a27, type: 3}
+  m_Name: ReferenceImageLibrary
+  m_EditorClassIdentifier: Unity.XR.ARSubsystems::UnityEngine.XR.ARSubsystems.XRReferenceImageLibrary
+  m_GuidLow: 5727186423209639681
+  m_GuidHigh: 7693195103535109044
+  m_DataStore:
+    m_Storage: []
+  m_Images:
+  - m_SerializedGuid:
+      m_GuidLow: 5183663000852482116
+      m_GuidHigh: 16958072890636888239
+    m_SerializedTextureGuid:
+      m_GuidLow: 2532285021119857645
+      m_GuidHigh: 12141614758055309576
+    m_Size: {x: 0.1, y: 0.1}
+    m_SpecifySize: 1
+    m_Name: patrick
+    m_Texture: {fileID: 0}
+  - m_SerializedGuid:
+      m_GuidLow: 5411769865188130935
+      m_GuidHigh: 8831873686650137487
+    m_SerializedTextureGuid:
+      m_GuidLow: 17488618394794507707
+      m_GuidHigh: 236016475043351545
+    m_Size: {x: 0.1, y: 0.1}
+    m_SpecifySize: 1
+    m_Name: pepe
+    m_Texture: {fileID: 0}
+  - m_SerializedGuid:
+      m_GuidLow: 5081817144942857063
+      m_GuidHigh: 14456988237114268324
+    m_SerializedTextureGuid:
+      m_GuidLow: 16642016717385100348
+      m_GuidHigh: 10003349540637319032
+    m_Size: {x: 0.1, y: 0.1}
+    m_SpecifySize: 1
+    m_Name: spngebob
+    m_Texture: {fileID: 0}
