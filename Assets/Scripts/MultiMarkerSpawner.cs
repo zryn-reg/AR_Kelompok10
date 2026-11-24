@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -12,13 +11,19 @@ public class MultiMarkerSpawner : MonoBehaviour
     {
         public string imageName;
         public GameObject prefab;
+        public string title;
+        [TextArea] public string description;
     }
 
     public List<MarkerPrefab> markers = new List<MarkerPrefab>();
+    public float hideDelay = 0.5f;
+
+    public Transform CurrentTarget { get; private set; }
+    public MarkerPrefab CurrentInfo { get; private set; }
 
     ARTrackedImageManager manager;
     readonly Dictionary<string, GameObject> spawned = new Dictionary<string, GameObject>();
-    readonly Dictionary<string, string> info = new Dictionary<string, string>();
+    readonly Dictionary<string, float> lastSeen = new Dictionary<string, float>();
 
     void Awake() { manager = GetComponent<ARTrackedImageManager>(); }
     void OnEnable() { manager.trackablesChanged.AddListener(OnChanged); }
@@ -26,38 +31,51 @@ public class MultiMarkerSpawner : MonoBehaviour
 
     void OnChanged(ARTrackablesChangedEventArgs<ARTrackedImage> args)
     {
-        foreach (var img in args.added) UpdateImage(img);
-        foreach (var img in args.updated) UpdateImage(img);
+        foreach (var img in args.added) Handle(img);
+        foreach (var img in args.updated) Handle(img);
     }
 
-    void UpdateImage(ARTrackedImage img)
+    void Handle(ARTrackedImage img)
     {
         string n = img.referenceImage.name;
         var entry = markers.Find(m => m.imageName == n);
-        string status = img.trackingState.ToString();
+        if (entry == null || entry.prefab == null) return;
 
-        if (entry == null) status += " | NAMA TIDAK COCOK";
-        else if (entry.prefab == null) status += " | PREFAB KOSONG";
-        else
+        if (!spawned.TryGetValue(n, out var go) || go == null)
         {
-            if (!spawned.TryGetValue(n, out var go) || go == null)
-            {
-                go = Instantiate(entry.prefab, img.transform);
-                go.transform.localPosition = Vector3.zero;
-                go.transform.localRotation = Quaternion.identity;
-                spawned[n] = go;
-            }
-            go.SetActive(img.trackingState != TrackingState.None);
-            status += " | OK";
+            go = Instantiate(entry.prefab, img.transform);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.SetActive(false);
+            spawned[n] = go;
         }
-        info[n] = status;
+
+        if (img.trackingState == TrackingState.Tracking)
+            lastSeen[n] = Time.time;
     }
 
-    void OnGUI()
+    void Update()
     {
-        GUI.skin.label.fontSize = 36;
-        var sb = new StringBuilder("Marker:\n");
-        foreach (var kv in info) sb.AppendLine(kv.Key + " -> " + kv.Value);
-        GUI.Label(new Rect(20, 200, 1000, 600), sb.ToString());
+        float newest = -1f;
+        Transform best = null;
+        MarkerPrefab bestInfo = null;
+
+        foreach (var kv in spawned)
+        {
+            if (kv.Value == null) continue;
+
+            bool visible = lastSeen.TryGetValue(kv.Key, out var t) && Time.time - t < hideDelay;
+            kv.Value.SetActive(visible);
+
+            if (visible && t > newest)
+            {
+                newest = t;
+                best = kv.Value.transform;
+                bestInfo = markers.Find(m => m.imageName == kv.Key);
+            }
+        }
+
+        CurrentTarget = best;
+        CurrentInfo = bestInfo;
     }
 }
